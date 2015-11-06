@@ -9,6 +9,8 @@
 
 
 #### Git Workflow
-Let's try to work on separate branches for development and only push changes to master once they are fully functional and "production ready".
+Let's try to work on separate branches for development and only push changes to `dev` once they are fully functional and "production ready". We only merge into `master` whenever the app is ready for release or approved by the App Store.
 
-Checkout [this](http://rogerdudler.github.io/git-guide/) guide for help on git. 
+When merging changes, use `git merge --no-ff <branch-to-merge>` instead of `git merge <branch-to-merge>` so that we can track changes and make sure that branches are not lost in the merging process.
+
+Checkout [this](http://rogerdudler.github.io/git-guide/) guide for help on git.
