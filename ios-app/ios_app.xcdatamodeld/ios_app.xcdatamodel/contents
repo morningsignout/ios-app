@@ -1,18 +1,47 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15B42" minimumToolsVersion="Automatic">
+    <entity name="CDAuthor" representedClassName="CDAuthor" syncable="YES">
+        <attribute name="about" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identity" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPost" inverseName="authoredBy" inverseEntity="CDPost" syncable="YES"/>
+    </entity>
+    <entity name="CDCategory" representedClassName="CDCategory" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPost" inverseName="categories" inverseEntity="CDPost" syncable="YES"/>
+    </entity>
+    <entity name="CDPost" representedClassName="CDPost" syncable="YES">
+        <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bookmarked" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="excerpt" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fullCoverImageURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identity" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="thumbnailCoverImageURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="authoredBy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDAuthor" inverseName="posts" inverseEntity="CDAuthor" syncable="YES"/>
+        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDCategory" inverseName="posts" inverseEntity="CDCategory" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTag" inverseName="posts" inverseEntity="CDTag" syncable="YES"/>
+    </entity>
+    <entity name="CDTag" representedClassName="CDTag" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="posts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPost" inverseName="tags" inverseEntity="CDPost" syncable="YES"/>
+    </entity>
     <entity name="Font" syncable="YES">
         <attribute name="captionSize" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="mainSize" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-    </entity>
-    <entity name="Post" syncable="YES">
-        <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>
     <entity name="Subscription" syncable="YES">
         <attribute name="categoryName" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Font" positionX="-54" positionY="0" width="128" height="75"/>
-        <element name="Post" positionX="-63" positionY="-18" width="128" height="60"/>
-        <element name="Subscription" positionX="-54" positionY="9" width="128" height="60"/>
+        <element name="CDAuthor" positionX="-146" positionY="458" width="128" height="120"/>
+        <element name="CDCategory" positionX="241" positionY="512" width="128" height="73"/>
+        <element name="CDPost" positionX="27" positionY="429" width="128" height="225"/>
+        <element name="CDTag" positionX="216" positionY="413" width="128" height="73"/>
+        <element name="Font" positionX="243" positionY="153" width="128" height="75"/>
+        <element name="Subscription" positionX="243" positionY="270" width="128" height="60"/>
     </elements>
 </model>

@@ -12,23 +12,31 @@
 #import "DropdownNavigationController.h"
 #import "FullPostViewController.h"
 #import <CoreData/CoreData.h>
-#import "Post.h"
+#import "AppDelegate.h"
+#import "CDPost.h"
+#import "CDAuthor.h"
+#import "CDTag.h"
+#import "CDCategory.h"
 #import "DataParser.h"
 
 #define CELL_IDENTIFIER @"bookmarkCell"
 static NSString * const SEGUE_IDENTIFIER = @"viewPost";
 
-@interface BookmarkTableViewController () <UITableViewDataSource, UITableViewDelegate> {
+@interface BookmarkTableViewController () <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate>
+{
     NSDictionary *attributes;
 }
-@property (strong, nonatomic) NSMutableArray *bookmarks;
-@property (strong, nonatomic) NSMutableArray *coreDataPostIDs;
-@property (strong, nonatomic) UIActivityIndicatorView *spinner;
+@property (nonatomic, retain) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) AppDelegate *delegate;
+@property (nonatomic, strong) NSManagedObjectContext *context;
 @end
 
 @implementation BookmarkTableViewController
 
-- (void)viewDidLoad {
+#pragma mark - View Controller Life Cycle
+
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -45,171 +53,140 @@ static NSString * const SEGUE_IDENTIFIER = @"viewPost";
     style.tailIndent = 0;
     attributes = @{NSParagraphStyleAttributeName : style};
     
-    // Place activity indicator
-    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    [self.view addSubview:self.spinner];
-    self.spinner.frame = CGRectMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2, 30, 30);
-    [self.spinner startAnimating];
+    // Set ManagedObjectContext
+    _delegate = [[UIApplication sharedApplication] delegate];
+    if ([self.delegate performSelector:@selector(managedObjectContext)])
+        _context = [self.delegate managedObjectContext];
+    else
+        _context = nil;
+    
+    // Perform fetch
+    NSError *error;
+    if (![self.fetchedResultsController performFetch:&error])
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     DropdownNavigationController *navVC = (DropdownNavigationController *)self.parentViewController.parentViewController;
     navVC.titleLabel.text = @"Bookmarks";
     self.navigationController.navigationBarHidden = YES;
+}
+
+#pragma mark - NSFetchedResultsController
+
+- (NSFetchedResultsController *)fetchedResultsController
+{
+    if (_fetchedResultsController)
+        return _fetchedResultsController;
     
-    // Pull core data content
-    NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Post"];
+    /* Initialize the fetchedResultsController */
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"CDPost"];
+    request.predicate = [NSPredicate predicateWithFormat:@"bookmarked == 1"];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identity" ascending:YES selector:@selector(localizedStandardCompare:)]];
     
-    dispatch_queue_t myQueue = dispatch_queue_create("My Queue",NULL);
-    dispatch_async(myQueue, ^{
+    NSFetchedResultsController *frc = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                          managedObjectContext:self.context
+                                                                            sectionNameKeyPath:nil
+                                                                                     cacheName:nil];
+    frc.delegate = self;
+    self.fetchedResultsController = frc;
     
-        // Pull out all the posts IDs previously saved and request for their post content
-        self.coreDataPostIDs = [[managedObjectContext executeFetchRequest:fetchRequest error:nil] mutableCopy];
-        for (NSManagedObject *bookmark in self.coreDataPostIDs) {
-            int postID = [[bookmark valueForKey:@"id"] intValue];
-            Post *bookmarkedPost = [DataParser DataForPostID:postID];
-            
-            BOOL exists = NO;
-            // If array already has the post, dont add it to the data source
-            for (Post* post in self.bookmarks) {
-                if (post.ID == postID) {
-                    exists = YES;
-                    break;
-                }
-            }
-            
-            if (!exists) {
-                [self.bookmarks addObject:bookmarkedPost];
-            }
-        }
+    return _fetchedResultsController;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (void)configureCell:(BookmarkTableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+    if (cell) {
+        CDPost *post = [self.fetchedResultsController objectAtIndexPath:indexPath];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tableView reloadData];
-            [self.spinner stopAnimating];
-        });
-    });
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (NSMutableArray *)bookmarks {
-    if (!_bookmarks) {
-        _bookmarks = [NSMutableArray array];
+        NSAttributedString *title = [[NSAttributedString alloc] initWithString:post.title attributes:attributes];
+        NSAttributedString *excerpt = [[NSAttributedString alloc] initWithString:post.excerpt attributes:attributes];
+        cell.titleLabel.attributedText = title;
+        cell.excerptLabel.attributedText = excerpt;
+        cell.imageView.image = nil;
+        
+        NSURLRequest *requestLeft = [NSURLRequest requestWithURL:[NSURL URLWithString:post.fullCoverImageURL]];
+        [cell.imageView setImageWithURLRequest:requestLeft placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            cell.imageView.image = image;
+        } failure:nil];
     }
-    return _bookmarks;
-}
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    // Return the number of sections.
-    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    return self.bookmarks.count;
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
+    return [sectionInfo numberOfObjects];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     BookmarkTableViewCell *cell = (BookmarkTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER forIndexPath:indexPath];
     
-    // Configure the cell...
-    Post *post = [self.bookmarks objectAtIndex:indexPath.row];
-    cell.titleLabel.text = post.title;
-    cell.excerptLabel.text = post.excerpt;
-    cell.imageView.image = nil;
-    
-    NSAttributedString *title = [[NSAttributedString alloc] initWithString:cell.titleLabel.text attributes:attributes];
-    NSAttributedString *excerpt = [[NSAttributedString alloc] initWithString:cell.excerptLabel.text attributes:attributes];
-    cell.titleLabel.attributedText = title;
-    cell.excerptLabel.attributedText = excerpt;
-    
-    NSURLRequest *requestLeft = [NSURLRequest requestWithURL:[NSURL URLWithString:post.fullCoverImageURL]];
-    [cell.imageView setImageWithURLRequest:requestLeft placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-        cell.imageView.image = image;
-    } failure:nil];
+    [self configureCell:cell atIndexPath:indexPath];
     
     return cell;
 }
 
-- (IBAction)removeFromBookmarks:(id)sender {
-    NSLog(@"remove");
-    
+#pragma mark - Actions
+
+- (IBAction)removeFromBookmarks:(id)sender
+{    
     // Get index of cell
     CGPoint buttonPosition = [sender convertPoint:CGPointZero
                                            toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:buttonPosition];
-    NSUInteger cellIndex = indexPath.row;
     
     // Remove from core data and NSMutableArray
-    [self.bookmarks removeObjectAtIndex:cellIndex];
-    [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    
-    NSManagedObjectContext *context = [self managedObjectContext];
-    NSManagedObject *removeThisPost = [self.coreDataPostIDs objectAtIndex:indexPath.row];
-    [context deleteObject:removeThisPost];
-    [self.coreDataPostIDs removeObject:removeThisPost];
-    
-    NSError *error = nil;
-    if (![context save:&error]) {
-        NSLog(@"Can't Delete! %@ %@", error, [error localizedDescription]);
-        return;
-    }
-    
-    [self.tableView reloadData];
+    CDPost *post = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    [CDPost removeBookmarkPostWithID:post.identity fromManagedObjectContext:self.context];
+    [self.delegate saveContext];
 }
 
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
-
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- } else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
-
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
- }
- */
-
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
-
-#pragma mark - Core Data
-
-- (NSManagedObjectContext *)managedObjectContext
+- (Author *)authorFromCDAuthor:(CDAuthor *)cAuthor
 {
-    NSManagedObjectContext *context = nil;
-    id delegate = [[UIApplication sharedApplication] delegate];
-    if ([delegate performSelector:@selector(managedObjectContext)]) {
-        context = [delegate managedObjectContext];
+    Author *author = nil;
+    
+    if (cAuthor) {
+        author = [[Author alloc] initWith:[cAuthor.identity intValue]
+                                     Name:cAuthor.name
+                                    About:cAuthor.about
+                                 AndEmail:cAuthor.email];
     }
-    return context;
+    
+    return author;
 }
 
+- (Post *)postFromCDPost:(CDPost *)cPost
+{
+    Post *post = nil;
+    
+    if (cPost) {
+        Author *author = [self authorFromCDAuthor:cPost.authoredBy];
+        NSMutableArray *categories = [[NSMutableArray alloc] initWithCapacity:0];
+        NSMutableArray *tags = [[NSMutableArray alloc] initWithCapacity:0];
+        for (CDCategory *category in cPost.categories)
+            [categories addObject:category.name];
+        for (CDTag *tag in cPost.tags)
+            [tags addObject:tag.name];
+        
+        post = [[Post alloc] initWith:[cPost.identity intValue]
+                                Title:cPost.title
+                               Author:author
+                                 Body:cPost.body
+                                  URL:cPost.url
+                              Excerpt:cPost.excerpt
+                                 Date:cPost.date
+                             Category:categories
+                                 Tags:tags
+                  ThumbnailCoverImage:cPost.thumbnailCoverImageURL
+                       FullCoverImage:cPost.fullCoverImageURL];
+    }
+    
+    return post;
+}
 
 #pragma mark - Navigation
 
@@ -217,13 +194,77 @@ static NSString * const SEGUE_IDENTIFIER = @"viewPost";
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    if ([segue.identifier isEqualToString:SEGUE_IDENTIFIER] && [segue.destinationViewController isKindOfClass:[FullPostViewController class]]) {
+    if ([segue.identifier isEqualToString:SEGUE_IDENTIFIER]
+        && [segue.destinationViewController isKindOfClass:[FullPostViewController class]]) {
         FullPostViewController *postVC = segue.destinationViewController;
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        Post *post = [self.bookmarks objectAtIndex:selectedIndexPath.row];
+        CDPost *cPost = [self.fetchedResultsController objectAtIndexPath:selectedIndexPath];
+        Post *post = [self postFromCDPost:cPost];
         postVC.post = post;
     }
 }
 
+#pragma mark - NSFetchedResultsControllerDelegate
+
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
+{
+    // The fetch controller is about to start sending change notifications, so prepare the table view for updates.
+    [self.tableView beginUpdates];
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+   didChangeObject:(id)anObject
+       atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
+      newIndexPath:(NSIndexPath *)newIndexPath
+{
+    UITableView *tableView = self.tableView;
+    
+    switch (type)
+    {
+        case NSFetchedResultsChangeInsert:
+            [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+            
+        case NSFetchedResultsChangeDelete:
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+            
+        case NSFetchedResultsChangeUpdate:
+            [self configureCell:(BookmarkTableViewCell *)[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
+            break;
+            
+        case NSFetchedResultsChangeMove:
+            [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+    }
+}
+
+- (void)controller:(NSFetchedResultsController *)controller
+  didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
+           atIndex:(NSUInteger)sectionIndex
+     forChangeType:(NSFetchedResultsChangeType)type
+{
+    switch (type)
+    {
+        case NSFetchedResultsChangeInsert:
+            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+            
+        case NSFetchedResultsChangeDelete:
+            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+            
+        default: break;
+    }
+}
+
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
+{
+    // The fetch controller has sent all current change notifications,
+    // so tell the table view to process all updates.
+    [self.tableView endUpdates];
+}
 
 @end

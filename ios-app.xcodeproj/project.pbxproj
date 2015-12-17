@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		6B8E31A86FF101F5D2A9632F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76DAA74E4EA736D8CF1DACF8 /* libPods.a */; };
+		B42B72EE1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72DF1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.m */; };
+		B42B72EF1BF047FE00B524D8 /* CDAuthor.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72E11BF047FE00B524D8 /* CDAuthor.m */; };
+		B42B72F01BF047FE00B524D8 /* CDTag+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72E31BF047FE00B524D8 /* CDTag+CoreDataProperties.m */; };
+		B42B72F11BF047FE00B524D8 /* CDTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72E51BF047FE00B524D8 /* CDTag.m */; };
+		B42B72F21BF047FE00B524D8 /* CDPost+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72E71BF047FE00B524D8 /* CDPost+CoreDataProperties.m */; };
+		B42B72F31BF047FE00B524D8 /* CDPost.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72E91BF047FE00B524D8 /* CDPost.m */; };
+		B42B72F41BF047FE00B524D8 /* CDCategory+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72EB1BF047FE00B524D8 /* CDCategory+CoreDataProperties.m */; };
+		B42B72F51BF047FE00B524D8 /* CDCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72ED1BF047FE00B524D8 /* CDCategory.m */; };
+		B42B72F91BF04BCE00B524D8 /* CoreDataControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B42B72F81BF04BCE00B524D8 /* CoreDataControl.m */; };
 		CA239A6F1B9F660400BEDC5E /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = CA239A6C1B9F660400BEDC5E /* GTMNSString+HTML.m */; };
 		CA239A701B9F660400BEDC5E /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = CA239A6E1B9F660400BEDC5E /* NSString+HTML.m */; };
 		CA239A741B9FA9A400BEDC5E /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CA239A731B9FA9A400BEDC5E /* SearchViewController.m */; };
@@ -67,6 +76,24 @@
 		2B5F6649C5844C474A10642E /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		76DAA74E4EA736D8CF1DACF8 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A36EF58E1666F92886A37D13 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		B42B72DE1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDAuthor+CoreDataProperties.h"; path = "CoreDataLibrary/CDAuthor+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B42B72DF1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDAuthor+CoreDataProperties.m"; path = "CoreDataLibrary/CDAuthor+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B42B72E01BF047FE00B524D8 /* CDAuthor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDAuthor.h; path = CoreDataLibrary/CDAuthor.h; sourceTree = "<group>"; };
+		B42B72E11BF047FE00B524D8 /* CDAuthor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDAuthor.m; path = CoreDataLibrary/CDAuthor.m; sourceTree = "<group>"; };
+		B42B72E21BF047FE00B524D8 /* CDTag+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDTag+CoreDataProperties.h"; path = "CoreDataLibrary/CDTag+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B42B72E31BF047FE00B524D8 /* CDTag+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDTag+CoreDataProperties.m"; path = "CoreDataLibrary/CDTag+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B42B72E41BF047FE00B524D8 /* CDTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTag.h; path = CoreDataLibrary/CDTag.h; sourceTree = "<group>"; };
+		B42B72E51BF047FE00B524D8 /* CDTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTag.m; path = CoreDataLibrary/CDTag.m; sourceTree = "<group>"; };
+		B42B72E61BF047FE00B524D8 /* CDPost+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDPost+CoreDataProperties.h"; path = "CoreDataLibrary/CDPost+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B42B72E71BF047FE00B524D8 /* CDPost+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDPost+CoreDataProperties.m"; path = "CoreDataLibrary/CDPost+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B42B72E81BF047FE00B524D8 /* CDPost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDPost.h; path = CoreDataLibrary/CDPost.h; sourceTree = "<group>"; };
+		B42B72E91BF047FE00B524D8 /* CDPost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDPost.m; path = CoreDataLibrary/CDPost.m; sourceTree = "<group>"; };
+		B42B72EA1BF047FE00B524D8 /* CDCategory+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CDCategory+CoreDataProperties.h"; path = "CoreDataLibrary/CDCategory+CoreDataProperties.h"; sourceTree = "<group>"; };
+		B42B72EB1BF047FE00B524D8 /* CDCategory+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "CDCategory+CoreDataProperties.m"; path = "CoreDataLibrary/CDCategory+CoreDataProperties.m"; sourceTree = "<group>"; };
+		B42B72EC1BF047FE00B524D8 /* CDCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDCategory.h; path = CoreDataLibrary/CDCategory.h; sourceTree = "<group>"; };
+		B42B72ED1BF047FE00B524D8 /* CDCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDCategory.m; path = CoreDataLibrary/CDCategory.m; sourceTree = "<group>"; };
+		B42B72F71BF04BCE00B524D8 /* CoreDataControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreDataControl.h; path = CoreDataLibrary/CoreDataControl.h; sourceTree = "<group>"; };
+		B42B72F81BF04BCE00B524D8 /* CoreDataControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreDataControl.m; path = CoreDataLibrary/CoreDataControl.m; sourceTree = "<group>"; };
 		CA239A6B1B9F660400BEDC5E /* GTMNSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSString+HTML.h"; sourceTree = "<group>"; };
 		CA239A6C1B9F660400BEDC5E /* GTMNSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GTMNSString+HTML.m"; sourceTree = "<group>"; };
 		CA239A6D1B9F660400BEDC5E /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+HTML.h"; sourceTree = "<group>"; };
@@ -179,6 +206,31 @@
 				76DAA74E4EA736D8CF1DACF8 /* libPods.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B42B72F61BF0480700B524D8 /* CoreDataLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				B42B72F71BF04BCE00B524D8 /* CoreDataControl.h */,
+				B42B72F81BF04BCE00B524D8 /* CoreDataControl.m */,
+				B42B72E61BF047FE00B524D8 /* CDPost+CoreDataProperties.h */,
+				B42B72E71BF047FE00B524D8 /* CDPost+CoreDataProperties.m */,
+				B42B72E81BF047FE00B524D8 /* CDPost.h */,
+				B42B72E91BF047FE00B524D8 /* CDPost.m */,
+				B42B72DE1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.h */,
+				B42B72DF1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.m */,
+				B42B72E01BF047FE00B524D8 /* CDAuthor.h */,
+				B42B72E11BF047FE00B524D8 /* CDAuthor.m */,
+				B42B72E21BF047FE00B524D8 /* CDTag+CoreDataProperties.h */,
+				B42B72E31BF047FE00B524D8 /* CDTag+CoreDataProperties.m */,
+				B42B72E41BF047FE00B524D8 /* CDTag.h */,
+				B42B72E51BF047FE00B524D8 /* CDTag.m */,
+				B42B72EA1BF047FE00B524D8 /* CDCategory+CoreDataProperties.h */,
+				B42B72EB1BF047FE00B524D8 /* CDCategory+CoreDataProperties.m */,
+				B42B72EC1BF047FE00B524D8 /* CDCategory.h */,
+				B42B72ED1BF047FE00B524D8 /* CDCategory.m */,
+			);
+			name = CoreDataLibrary;
 			sourceTree = "<group>";
 		};
 		CA239A6A1B9F660400BEDC5E /* MWFeedParser */ = {
@@ -303,6 +355,7 @@
 		FB714A3F1B94D19800D68CB5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B42B72F61BF0480700B524D8 /* CoreDataLibrary */,
 				FB714A491B94FFCF00D68CB5 /* URLParser.h */,
 				FB714A4A1B94FFCF00D68CB5 /* URLParser.m */,
 				FB714A4C1B94FFE100D68CB5 /* DataParser.h */,
@@ -520,8 +573,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				FB997E461BA5557D0080CABD /* ImageViewController.m in Sources */,
+				B42B72F91BF04BCE00B524D8 /* CoreDataControl.m in Sources */,
+				B42B72F41BF047FE00B524D8 /* CDCategory+CoreDataProperties.m in Sources */,
 				FB7E9E6E1BAF35D500F265E2 /* PostHeaderInfo.m in Sources */,
 				FBD8676A1BAA2188006F4BF6 /* ArticleLabels.m in Sources */,
+				B42B72F11BF047FE00B524D8 /* CDTag.m in Sources */,
 				FB99DEE91B9A1C01007111B4 /* TiledCell.m in Sources */,
 				FBDEF3521B9E0436005BD9F4 /* ExternalLinksWebViewController.m in Sources */,
 				CA239A701B9F660400BEDC5E /* NSString+HTML.m in Sources */,
@@ -533,7 +589,9 @@
 				FB0391771B9BC06600C16FE8 /* Tile.m in Sources */,
 				FB714A4B1B94FFCF00D68CB5 /* URLParser.m in Sources */,
 				FBD0291A1BA898D300101D73 /* BookmarkTableViewCell.m in Sources */,
+				B42B72F21BF047FE00B524D8 /* CDPost+CoreDataProperties.m in Sources */,
 				FBBA5AB91BA107E900345D5F /* BaseTiledCollectionViewController.m in Sources */,
+				B42B72F51BF047FE00B524D8 /* CDCategory.m in Sources */,
 				FB714A451B94D20600D68CB5 /* Author.m in Sources */,
 				FB72E7F61BA3525000F10356 /* ContainerViewController.m in Sources */,
 				FBBA5AB61BA1012200345D5F /* TileCollectionViewCellC.m in Sources */,
@@ -541,6 +599,7 @@
 				CA239A6F1B9F660400BEDC5E /* GTMNSString+HTML.m in Sources */,
 				FB72E83A1BA3828500F10356 /* EmptySegue.m in Sources */,
 				FB798E2D1BAD182C00F98139 /* CategoryDetailViewController.m in Sources */,
+				B42B72EE1BF047FE00B524D8 /* CDAuthor+CoreDataProperties.m in Sources */,
 				FB99DEE21B9A1AFE007111B4 /* FeatureTableViewController.m in Sources */,
 				FB714A211B94D16000D68CB5 /* TestViewController.m in Sources */,
 				FB714A4E1B94FFE100D68CB5 /* DataParser.m in Sources */,
@@ -550,13 +609,16 @@
 				FBDA71D41BA7803800D68C4A /* AuthorViewController.m in Sources */,
 				FBA9E9C91BB7A00F00049B79 /* SubscriptionViewController.m in Sources */,
 				FBEB3A7B1B9F93DC00B57AAB /* FeaturedTileCollectionViewCell.m in Sources */,
+				B42B72F01BF047FE00B524D8 /* CDTag+CoreDataProperties.m in Sources */,
 				FB99DEE61B9A1BD9007111B4 /* FeaturedStoryTableViewCell.m in Sources */,
 				FBDEF3D11B9E4D31005BD9F4 /* DropdownMenuController.m in Sources */,
 				FBBA5AB01BA0DC0600345D5F /* TileCollectionViewCellB.m in Sources */,
 				FB714A181B94D16000D68CB5 /* main.m in Sources */,
 				CA7F86DD1BA296E9002E16CA /* CategoryViewController.m in Sources */,
+				B42B72F31BF047FE00B524D8 /* CDPost.m in Sources */,
 				FBBA5AB31BA0F19600345D5F /* BaseTileCollectionViewCell.m in Sources */,
 				FB7E9E6B1BAE27EB00F265E2 /* Constants.m in Sources */,
+				B42B72EF1BF047FE00B524D8 /* CDAuthor.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

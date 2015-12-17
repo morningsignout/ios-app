@@ -1,0 +1,168 @@
+===================== Documentation of Core Data Library ======================
+======================== Written by Qingwei Lan (2015) ========================
+
+------
+Files
+------
+
+  + CoreDataControl.h
+  + CoreDataControl.m
+
+  + CDPost.h
+  + CDPost.m
+  + CDPost+CoreDataProperties.h
+  + CDPost+CoreDataProperties.m
+
+  + CDAuthor.h
+  + CDAuthor.m
+  + CDAuthor+CoreDataProperties.h
+  + CDAuthor+CoreDataProperties.m
+
+  + CDTag.h
+  + CDTag.m
+  + CDTag+CoreDataProperties.h
+  + CDTag+CoreDataProperties.m
+
+  + CDCategory.h
+  + CDCategory.m
+  + CDCategory+CoreDataProperties.h
+  + CDCategory+CoreDataProperties.m
+
+
+--------------------------
+Core Data Model Structure
+--------------------------
+
+      +===================+
+      |      CDAuthor     |
+      +===================+
+      | (int)    identity |
+      | (string) about    |
+      | (string) email    |
+      | (string) name     |  <----------------------+
+      +-------------------+                         |
+      | (set)    posts *------+                     |
+      +-------------------+   |                     |
+                              |                     |
+    +-------------------------+                     |
+    |                                               |
+    |    +====================================+     |
+    +->> |              CDPost                | <<---------+
+         +====================================+     |      |
+         | (int)    identity                  | <<---------------+
+         | (string) body                      |     |      |     |
+         | (string) date                      |     |      |     |
+         | (string) excerpt                   |     |      |     |
+         | (string) fullCoverageImageURL      |     |      |     |
+         | (string) thumbnailCoverageImageURL |     |      |     |
+         | (string) title                     |     |      |     |
+         | (string) url                       |     |      |     |
+         +------------------------------------+     |      |     |
+         | (CDAuthor) authoredBy           *--------+      |     |
+         +------------------------------------+            |     |
+         | (set)      tags                 *------+        |     |
+         | (set)      categories           *----+ |        |     |
+         +------------------------------------+ | |        |     |
+                                                | |        |     |
+                                                | |        |     |
+             +================+                 | |        |     |
+             |   CDCategory   | <<--------------+ |        |     |
+             +================+                   |        |     |
+             | (string) name  |                   |        |     |
+             +----------------+                   |        |     |
+             | (set)  posts *---------------------|--------+     |
+             +----------------+                   |              |
+                                                  |              |
+                                                  |              |
+             +================+                   |              |
+             |     CDTag      | <<----------------+              |
+             +================+                                  |
+             | (string) name  |                                  |
+             +----------------+                                  |
+             | (set)  posts *------------------------------------+
+             +----------------+
+
+
+---------------------------
+Explanation & Sample Usage
+---------------------------
+
+Importing Headers
+------------------
+
+For the Core Data library to work, please make sure to import headers
+
+    #import "CoreDataControl.h"
+    #import "CDPost.h"
+    #import "CDAuthor.h"
+    #import "CDTag.h"
+    #import "CDCategory.h"
+
+
+Core Data Access
+-----------------
+
+Let's first look at the `CoreDataControl` class. We define this class for
+simple Core Data access. By moving the "Core Data Stack" from the AppDelegate,
+we get extra modularity and this also makes the library easily extensible.
+
+We create a singleton instance of `CoreDataControl` with the code
+
+    CoreDataControl *control = (CoreDataControl *)sharedControl
+
+This method creates a static instance of `CoreDataControl`, or returns the
+shared instance if it already exists in memory. Now we can access Core Data
+through the `managedObjectContext`
+
+    control.managedObjectContext
+
+which is of type (ManagedObjectContext *).
+
+
+Inserting Objects
+------------------
+
+To insert `Post`s into Core Data, suppose we have a `Post` object
+called `post`. We insert this into Core Data using
+
+    CDPost *cdpost = [CDPost postWithPost:post 
+                   inManagedObjectContext:control.managedObjectContext];
+
+This will automatically insert the `post`'s data into Core Data. When you're
+done, be sure to save the changes using
+
+    [control saveContext];
+
+This method is NOT thread-safe, so if we call it from multiple threads, the
+chagnes may get mixed up.
+
+
+Deleting Objects
+-----------------
+
+To delete a `Post` from Core Data, we search for the corresponding `Post` by its unique `identifier` and then delete it from Core Data, using
+
+    int identifier = 10;
+    [CDPost deletePostWithID:identifier
+        fromManagedObjectContext:control.managedObjectContext];
+
+Be sure to save the changes using '[control saveContext];'.
+
+
+------------------------------------
+Notes on the Library Implementation
+------------------------------------
+
+  (1) Deleting objects won't affect other objects, i.e. deleting a `Tag` will
+      not delete `Posts` associated with it. This should be implemented in
+      some certain cases, such as deleting an `Author` should remove all the
+      corresponding `Post`s, or this will become a cumbersome side effect in
+      later development.
+  
+  (2) All methods are NOT thread-safe, so extra synchronization will be need
+      when called from multiple threads.
+  
+  (3) * The original `Post` entity in the Core Data model was changed to
+        `CDPost` to avoid name clashing with the `Post` in the model. So
+        whatever interface that originally used this `Post` in Core Data
+        should note the changes.

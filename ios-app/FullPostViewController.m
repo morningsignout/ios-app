@@ -12,10 +12,12 @@
 #import "ImageViewController.h"
 #import <AFNetworking.h>
 #import <CoreData/CoreData.h>
+#import "CDPost.h"
 #import "ArticleLabels.h"
 #import "Constants.h"
 #import "PostHeaderInfo.h"
 #include "AuthorViewController.h"
+#import "AppDelegate.h"
 
 static NSString * const header = @"<!-- Latest compiled and minified CSS --><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css\"><!-- Optional theme --><link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css\"><!-- Latest compiled and minified JavaScript --><script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js\"></script><!-- Yeon's CSS --><link rel=\"stylesheet\" href=\"http://morningsignout.com/wp-content/themes/mso/style.css?ver=4.3\"><meta charset=\"utf-8\"> \
     <style type=\"text/css\">.ssba {}.ssba img { width: 30px !important; padding: 0px; border:  0; box-shadow: none !important; display: inline !important; vertical-align: middle; } .ssba, .ssba a {text-decoration:none;border:0;background: none;font-family: Indie Flower;font-size: 20px;}</style><div style=\"padding:5px;background-color:white;box-shadow:none;\"></div>";
@@ -36,6 +38,8 @@ static const CGFloat initialWebViewYOffset = 450;
 @property (nonatomic) CGFloat lastContentOffset;
 @property (weak, nonatomic) IBOutlet UIProgressView *progressView;
 
+@property (nonatomic, strong) AppDelegate *delegate;
+
 @end
 
 @implementation FullPostViewController
@@ -55,6 +59,8 @@ static const CGFloat initialWebViewYOffset = 450;
     [self.header.articleLabels.authorLabel setUserInteractionEnabled:YES];
     UITapGestureRecognizer *tapAuthorRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tappedAuthor:)];
     [self.header.articleLabels.authorLabel addGestureRecognizer:tapAuthorRecognizer];
+    
+    _delegate = [[UIApplication sharedApplication] delegate];
     
     // Retrieve user font size preference if was previously saved
     NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
@@ -115,9 +121,8 @@ static const CGFloat initialWebViewYOffset = 450;
 - (NSManagedObjectContext *)managedObjectContext
 {
     NSManagedObjectContext *context = nil;
-    id delegate = [[UIApplication sharedApplication] delegate];
-    if ([delegate performSelector:@selector(managedObjectContext)]) {
-        context = [delegate managedObjectContext];
+    if ([self.delegate performSelector:@selector(managedObjectContext)]) {
+        context = [self.delegate managedObjectContext];
     }
     return context;
 }
@@ -282,36 +287,16 @@ static const CGFloat initialWebViewYOffset = 450;
         [newFont setValue:[NSNumber numberWithFloat:captionFontSize] forKey:@"captionSize"];
     }
     
-    NSError *error = nil;
-    // Save the object to persistent store
-    if (![context save:&error]) {
-        NSLog(@"Can't Save! %@ %@", error, [error localizedDescription]);
-    }
+    [self.delegate saveContext];
 }
 
-- (void)bookmarkPost {
-    // Pull out all the posts previously bookmarked
+- (void)bookmarkPost
+{
     NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Post"];
-    NSArray *bookmarks = [[managedObjectContext executeFetchRequest:fetchRequest error:nil] mutableCopy];
     
-    // If post already saved before, notify user and give choice to un-bookmark
-    for (id bookmark in bookmarks) {
-        int postID = [[bookmark valueForKey:@"id"] intValue];
-        if (postID == self.post.ID) {
-            return;
-        }
-    }
-    
-    // Else if not saved before, save it into core data now
-    NSManagedObject *bookmarkedPost = [NSEntityDescription insertNewObjectForEntityForName:@"Post" inManagedObjectContext:managedObjectContext];
-    [bookmarkedPost setValue:[NSNumber numberWithInt:self.post.ID] forKey:@"id"];
-    
-    NSError *error = nil;
-    // Save the object to persistent store
-    if (![managedObjectContext save:&error]) {
-        NSLog(@"Can't Save! %@ %@", error, [error localizedDescription]);
-    }
+    [CDPost addBookmarkPost:self.post toManagedObjectContext:managedObjectContext];
+    NSLog(@"Finished adding bookmark");
+    [self.delegate saveContext];
 }
 
 - (void)tappedCoverImage:(UITapGestureRecognizer *)tap {
